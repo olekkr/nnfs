@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot
-import mnist
+#import mnist
 import pickle
 
 from layers import *
@@ -37,22 +37,27 @@ class Model:
         #set fwd and back
         for l in self.layers:
             l.model = self
+            l.init()
         
         for idx, l in enumerate(self.layers):
-            if idx != len(layers)-1:
-                l.fwd = layers[idx + 1]
+            if idx != len(self.layers)-1:
+                l.fwd = self.layers[idx + 1]
             if idx != 0:
-                l.bck = layers[idx - 1]
-    
+                l.bck = self.layers[idx - 1]
+
+
     def XGen (self):
+        yield [[1,2,3],[1,2,3],[1,2,3]]
         gen = (s for s in trainData[0])
         for _ in gen:
             output = []
             for _ in range(self.batchsize):
                 output.append(np.array(next(gen)).ravel())
-            yield output
+            #yield output
+        
 
     def YGen (self):
+        yield [2,0,0]
         gen = (s for s in trainData[1])
         for _ in gen:
             output = []
@@ -61,18 +66,22 @@ class Model:
             yield output
     
     def forward(self):
-        input = next(self.inputs)
-        self.layers[0].forward(np.array(input))
+        input = np.array(next(self.inputs))
+        self.layers[0].forward(input)
+
         print(self.layers)
         #last = self.layers[0]
         #for item in self.layers[1:]:
         #    item.forward(last.output)
         #    last = item
 
+modeltest1 = Model([Layer_Dense(3, 4), Activation_Softmax(), Loss_CategoricalCrossentropy()],3) ## , Activation_Softmax()
+modeltest1.forward()
 
-layers = [Layer_Dense(28**2, 64), Activation_ReLU(), Layer_Dense(64, 10),  Activation_Softmax(), Loss_CategoricalCrossentropy()]
 
-model = Model(layers,1)
+#layers = [Layer_Dense(28**2, 64), Activation_ReLU(), Layer_Dense(64, 10),  Activation_ReLU(), Loss_CategoricalCrossentropy()]
 
-model.forward()
+#model = Model(layers,1)
+
+#model.forward()
 
