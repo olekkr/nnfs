@@ -9,7 +9,7 @@ from layers import *
 # ##### Caching databse into a pickle
 #with open("pickle", 'wb') as f:
 #    (trainData, testData) = mnist.load_data()
-#    pickle.dump([trainData[0][:10], trainData[1][:10]], f)
+#    pickle.dump([trainData[0][:1000], trainData[1][:1000]], f)
     
 #Use cached data
 with open("./pickle", 'rb') as f:
