@@ -46,17 +46,17 @@ class Model:
     
     def XGen (self):
         gen = (s for s in trainData[0])
-        for i in gen:
+        for _ in gen:
             output = []
-            for ii in range(self.batchsize):
+            for _ in range(self.batchsize):
                 output.append(np.array(next(gen)).ravel())
             yield output
 
     def YGen (self):
         gen = (s for s in trainData[1])
-        for i in gen:
+        for _ in gen:
             output = []
-            for ii in range(self.batchsize):
+            for _ in range(self.batchsize):
                 output.append(int(next(gen)))
             yield output
     
