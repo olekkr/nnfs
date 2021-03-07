@@ -1,6 +1,7 @@
 import numpy as np
 
 
+
 # Dense layer
 class Layer_Dense:
 
@@ -12,23 +13,29 @@ class Layer_Dense:
 
     # Forward pass
     def forward(self, inputs):
+
         # Calculate output values from inputs, weights and biases
         self.output = np.dot(inputs, self.weights) + self.biases
+        self.fwd.forward(self.output)
+        
 
 
 # ReLU activation
 class Activation_ReLU:
-
     # Forward pass
     def forward(self, inputs):
+
         # Calculate output values from inputs
         self.output = np.maximum(0, inputs)
+        self.fwd.forward(self.output)
+        
 
 
 # Softmax activation
 class Activation_Softmax:
     # Forward pass
     def forward(self, inputs):
+
         # Get unnormalized probabilities
         exp_values = np.exp(inputs - np.max(inputs, axis=1,
                                             keepdims=True))
@@ -36,7 +43,8 @@ class Activation_Softmax:
         probabilities = exp_values / np.sum(exp_values, axis=1,
                                             keepdims=True)
         self.output = probabilities
-        print(self.output)
+        self.fwd.forward(self.output)
+        #print(self.output)
 
 
 # Cross-entropy loss
@@ -44,13 +52,12 @@ class Loss_CategoricalCrossentropy:
 
     # Forward pass
     def forward(self, y_pred):
-        
 
-        ## for the sake of testing change later
+        # for the sake of testing change later
         y_true = [0] * len(y_pred[0])
         y_true[next(self.model.y_true)[0]] = 1
+        #print(y_true)
 
-        
         # Number of samples in a batch
         samples = len(y_pred)
 
@@ -77,4 +84,4 @@ class Loss_CategoricalCrossentropy:
         negative_log_likelihoods = -np.log(correct_confidences)
         self.output = negative_log_likelihoods
 
-        print(self.output)
+        #print(self.output)

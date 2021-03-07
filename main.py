@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot
 import mnist
-import pickle 
+import pickle
 
 from layers import *
 
@@ -31,6 +31,7 @@ class Model:
         self.inputs = self.XGen()
         self.y_true = self.YGen()
 
+        self.count = 1 
 
         self.layers = layerList
         #set fwd and back
@@ -62,10 +63,11 @@ class Model:
     def forward(self):
         input = next(self.inputs)
         self.layers[0].forward(np.array(input))
-        last = self.layers[0]
-        for item in self.layers[1:]:
-            item.forward(last.output)
-            last = item
+        print(self.layers)
+        #last = self.layers[0]
+        #for item in self.layers[1:]:
+        #    item.forward(last.output)
+        #    last = item
 
 
 layers = [Layer_Dense(28**2, 64), Activation_ReLU(), Layer_Dense(64, 10),  Activation_Softmax(), Loss_CategoricalCrossentropy()]
