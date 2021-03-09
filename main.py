@@ -24,7 +24,7 @@ with open("./pickle", 'rb') as f:
 
 #pyplot.imshow(trainData[0][9])
 #pyplot.show()
-#print(trainData[1][0:100])
+print(len(trainData[1]))
 
 
 class Model:
@@ -57,41 +57,54 @@ class Model:
 
 
     def XGen (self):
-        gen = (s for s in trainData[0])
+        while True:
+            yield [1,2,3]
+        gen = (s for s in trainData[0][:])
         for _ in gen:
             output = []
             for _ in range(self.batchsize):
                 output.append(np.array(next(gen)).ravel())
             yield output
-            yield output
-            yield output
         
 
     def YGen (self):
-        gen = (s for s in trainData[1])
+        while True:
+            yield [2]
+        gen = (s for s in trainData[1][:])
         for _ in trainData[1]:
             output = []
             for _ in range(self.batchsize):
                 y = int(next(gen))
                 output.append(y)
             yield output
-            yield output
-            yield output
+    def restart(self):
+        self.inputs = self.XGen()
+        self.y_true = self.YGen()
     
     def forward(self):
         input = np.array(next(self.inputs))
         self.layers[0].forward(input)
-        print(self.layers)
+        #print(self.layers)
 
     def backward(self):
         self.layers[-1].backward()
+    
+    def train(self, epochs):
+        for i in range(epochs):
+            self.forward()
+            self.backward()
 
+modeltest1 = Model([
+    Layer_Dense(3, 5), Activation_ReLU(), 
+    Layer_Dense(5, 10), Activation_ReLU(), 
+    Layer_Dense(10, 4), Activation_Softmax(), 
+    Loss_CategoricalCrossentropy()], 1)
+modeltest1.train(1)
 
-modeltest1 = Model([Layer_Dense(28**2, 10), Activation_ReLU(), Layer_Dense(10, 10), Activation_Softmax(), Loss_CategoricalCrossentropy()], 3) ## , Activation_Softmax()
-modeltest1.forward()
-modeltest1.backward()
-modeltest1.forward()
-modeltest1.backward()
+#modeltest1.forward()
+#modeltest1.backward()
+#modeltest1.forward()
+#modeltest1.forward()
 
 
 #layers = [Layer_Dense(28**2, 64), Activation_ReLU(), Layer_Dense(64, 10),  Activation_ReLU(), Loss_CategoricalCrossentropy()]

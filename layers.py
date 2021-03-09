@@ -25,34 +25,40 @@ class Layer_Dense:
         for (inputt, weight, bias) in zip(inputs, self.weights, self.biases):
             self.output.append(np.dot(inputt, weight) + bias)
         self.fwd.forward(self.output)
+        #print(np.array(self.output).shape)
 
     def backward(self):
-        print(self)
+        #print(self)
         
-        #print(np.array(self.weights).shape, np.array(self.inputs).shape, self.biases, "params")
+        #print('weights:', np.array(self.weights).shape, 'inputs', np.array(self.inputs).shape, self.biases, "params")
+
+        #print(np.array(self.fwd.derivatives).shape, "testtestestder")
+
 
         #dL/dw 
         #for each elem in batch
         dLdw = []
         for db , ib in zip(self.fwd.derivatives, self.inputs):
+            dLdw.append(np.dot(np.array(db).T, np.array(ib)))
             #new in batch
-            new = []
-            for i in ib:
-                #ds = np.multiply(ds, i)
-                new.append(i*db[0])
-            dLdw.append(new)
-        #print(np.array(dLdw).shape, np.array(self.weights).shape, "testtestest")
-
+            #new = []
+            #for i in ib:
+            #    ds = np.multiply(ds, i)
+            #    new.append(i*np.array(db[0]))
+            #dLdw.append(new)
+        print(np.array(dLdw).shape,dLdw)
 
         #dL/db
-        dLdb = self.fwd.derivatives
+        dLdb = self.fwd.derivatives 
+        print(dLdb)
 
         
         #dL/da is w * dL/dz
-        self.derivatives = self.weights * self.fwd.derivatives
+        #self.derivatives = self.weights * self.fwd.derivatives
         
-        self.weights -= np.array(dLdw) * self.model.learningRate
-        self.biases -= np.array(dLdb) * self.model.learningRate
+        #self.weights -= np.array([np.average(np.array(dLdw) * self.model.learningRate, axis=0)] * self.model.batchsize)
+        print()
+        self.biases -= np.array([np.average(np.array(dLdb) * self.model.learningRate, axis=0)] * self.model.batchsize)
 
         #print(dLdb, self.biases.shape)
 
@@ -79,7 +85,7 @@ class Activation_ReLU:
         self.fwd.forward(self.output)
     
     def backward(self):
-        print(self)
+        #print(self)
         self.derivatives = np.clip(self.output, 0, 1)
         self.bck.backward()
         pass
@@ -94,6 +100,7 @@ class Activation_Softmax:
         self.inputs = inputs
         self.output = []
         # Get unnormalized probabilities
+        #print(inputs)
         for input in inputs:
             exp_values = np.exp(input - np.max(input, axis=1,
                                                keepdims=True))
@@ -106,7 +113,7 @@ class Activation_Softmax:
         self.fwd.forward(self.output)
 
     def backward(self):
-        print(self)
+        #print(self)
         # do for each elem in batch
         # da(x)/d(notx)
         # will be calculate dL/dz for each
@@ -158,15 +165,15 @@ class Loss_CategoricalCrossentropy:
             negative_log_likelihoods = -np.log(correct_confidences)
             self.output.append(negative_log_likelihoods)
         print(self.output, "loss")
-        print(y_pred)
         print([np.argmax(a) for a in y_pred], self.y_trues)
 
     def backward(self):
-        print(self)
+        #print(self)
         # da(x)/dn
         # will be calculate dL/dz for each
         self.derivatives = []
+        print('test', self.y_pred[0], self.trueVects)
         for (p, y) in zip(self.y_pred, self.trueVects):
-            self.derivatives.append(-y/p)
+            self.derivatives.append(-y/np.clip(p, 1e-7, 1 - 1e-7))
             #print(self.derivatives, "der")
         self.bck.backward()
